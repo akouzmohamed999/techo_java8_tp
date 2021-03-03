@@ -3,202 +3,392 @@ package fr.norsys;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Series of test to tryout Optional
- * every method implementation should not use null checks, or throw nullPointExceptions
- */
 public class UserServiceTest {
 
     private UserService userService;
 
+    private List<User> users = new ArrayList<>();
+
+
     @Before
-    public void setup() {
+    public void setUp() {
         userService = new UserService();
+        users.addAll(
+                Arrays.asList(
+                        new User("user1@norsys.fr", new Address(new Country("Morocco")), 22, 500),
+                        new User("user2@norsys.fr", new Address(new Country("France")), 30, 858),
+                        new User("user3@norsys.fr", new Address(new Country("Portugal")), 26, 963),
+                        new User("user4@norsys.fr", new Address(new Country("USA")), 33, 875),
+                        new User("user5@norsys.fr", new Address(new Country("France")), 21, 1050),
+                        new User("user6@norsys.fr", new Address(new Country("Portugal")), 35, 993),
+                        new User("user7-norsys.fr", new Address(new Country("Canada")), 60, 888)
+                )
+        );
     }
 
     /**
-     * Getting user using Optional
+     * Stream.of / Collect
+     * create a method that create a stream
+     * from a user array and collects it to a list
      */
 
     @Test
-    public void shouldReturnEmptyIfUserIsNull() {
-        User user = null;
-        assertThat(userService.getUserValue(user)).isEmpty();
-    }
+    public void shouldReturnAListFromArray() {
 
-    @Test
-    public void shouldReturnPresentIfUserIsNotNull() {
-        User user = new User();
-        assertThat(userService.getUserValue(user)).isPresent();
+        User[] userArray = {new User("user1@norsys.fr", new Address(new Country("Morocco")), 22, 500),
+                new User("user2@norsys.fr", new Address(new Country("France")), 30, 858),
+                new User("user3@norsys.fr", new Address(new Country("Portugal")), 26, 963)};
+        assertThat(userService.getListFromArray(userArray).size()).isEqualTo(3);
     }
 
     /**
-     * create a method that throws a NoSuchElementException if null
-     * else returns the user itself
+     * filter / Collect
+     * create a method that filters users list by country name
      */
+
+    @Test
+    public void shouldReturnAFilteredList() {
+        List<User> result = userService.getUsersByCountryName(users, "France");
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.stream().anyMatch(user -> user.getEmail().equals("user2@norsys.fr"))).isTrue();
+        assertThat(result.stream().anyMatch(user -> user.getEmail().equals("user5@norsys.fr"))).isTrue();
+    }
+
+    /**
+     * Map / Collect
+     * create a method that returns List of countries name from users list
+     */
+
+    @Test
+    public void shouldReturnAListOfCountriesNameFromListOfUsers() {
+        List<String> countries = userService.getCountriesNameFromUsers(users);
+        assertThat(countries.size()).isEqualTo(7);
+    }
+
+
+    /**
+     * distinct
+     * creates a method that returns list of countries name distinct (with no duplicates)
+     */
+
+    @Test
+    public void shouldReturnAListOfCountriesNameFromListOfUsersDistinct() {
+        List<String> countries = userService.getCountriesNameFromUsersDistinct(users);
+        assertThat(countries.size()).isEqualTo(5);
+    }
+
+
+    /**
+     * distinct
+     * creates a method that returns list of countries distinct (with no duplicates)
+     */
+
+    @Test
+    public void shouldReturnAListOfCountriesFromListOfUsersDistinct() {
+        List<Country> countries = userService.getCountriesFromUsersDistinct(users);
+        assertThat(countries.size()).isEqualTo(5);
+    }
+
+
+    /**
+     * All Match
+     * create a method that returns true if ALL users emails are valid
+     * else returns false
+     */
+
+    @Test
+    public void shouldReturnTrueifAllUsersEmailAreValid() {
+        assertThat(userService.areAllUsersEmailsValid(users)).isFalse();
+    }
+
+    /**
+     * None Match
+     * create a method that returns true if NONE of users emails are valid
+     * else return false
+     */
+
+    @Test
+    public void shouldReturnTrueIfNoneUsersEmailAreValid() {
+        assertThat(userService.areAllUsersEmailsNotValid(users)).isFalse();
+    }
+
+    /**
+     * Any Match
+     * create a method that returns true if there is AT LEAST one valid email
+     * else returns false
+     */
+
+    @Test
+    public void shouldReturnTrueIfAtLeastOneUsersEmailAreValid() {
+        assertThat(userService.areAtLeastOneUsersEmailsValid(users)).isTrue();
+    }
+
+    /**
+     * Sorted
+     * create a method that returns a sorted of countries names from users list
+     */
+
+    @Test
+    public void shouldReturnAListOfCountriesNameFromListOfUsersSorted() {
+        List<String> countries = userService.getCountriesNameFromUsersSorted(users);
+        assertThat(countries).isSorted();
+    }
+
+    /**
+     * distinct / Custom Sort
+     * create a method that returns a non duplicate
+     * sorted with Morocco being the first element and the rest sorted in the opposite of natural sort
+     */
+
+    @Test
+    public void shouldReturnAListOfCountriesNameFromListOfUserCustomSorted() {
+        List<String> countries = userService.getCountriesNameFromUsersCustomSorted(users);
+        assertThat(countries.size()).isEqualTo(5);
+        assertThat(countries.get(0)).isEqualTo("Morocco");
+        assertThat(countries.get(1)).isEqualTo("USA");
+        assertThat(countries.get(2)).isEqualTo("Portugal");
+        assertThat(countries.get(3)).isEqualTo("France");
+        assertThat(countries.get(4)).isEqualTo("Canada");
+    }
+
+    /**
+     * Reduce
+     * create a method that returns a concat of users email
+     */
+
+    @Test
+    public void shouldReturnAConcatOfUsersEmail() {
+        String expectedResult = "user1,user2,user3,user4,user5,user6,user7";
+        assertThat(userService.getUserEmailCombined(users)).isEqualTo(expectedResult);
+
+    }
+
+    /**
+     * IntStream
+     * average
+     * create a method that returns the average of users age
+     * throws NoSuchElementException if there is no element is the main stream
+     */
+
+    @Test
+    public void shouldReturnAverageUsersAge() {
+        assertThat(userService.getUserAverageAge(users)).isEqualTo(32);
+    }
 
     @Test(expected = NoSuchElementException.class)
-    public void shouldThrowExceptionIfElementIsNotFound() {
-        User user = null;
-        userService.throwExceptionIfUserIsNull(user);
+    public void shouldThrowExceptionWhenNoAverageIsFound() {
+        userService.getUserAverageAge(new ArrayList<>());
     }
 
     /**
-     * OrElse and OrElseGet
-     * create a method that returns a new user using email constructor if the passed user is null
+     * IntStream
+     * sum
+     * create a method that returns the sum of users login hours
      */
 
     @Test
-    public void shouldReturnNewUserWithEmailIfUserisNull() {
-        User user = new User();
-        assertThat(userService.getUserUsingOrElse(user)).isNotNull();
+    public void shouldReturnSumOfUsersLoginHours() {
+        assertThat(userService.getSumOfUsersLoginHours(users)).isEqualTo(6127);
+    }
+
+
+    @Test
+    public void shouldReturn0LoginHoursIfListIsEmpty() {
+        assertThat(userService.getSumOfUsersLoginHours(new ArrayList<>())).isEqualTo(0);
     }
 
     /**
-     * Map
-     * Create a method that gets the user email from user and "unknown" if user is null
+     * IntStream
+     * max
+     * create a method that returns the max login hours within users
+     * throws NoSuchElementException if there is no element is the main stream
      */
 
     @Test
-    public void shouldReturnUserEmailIsPresent() {
-        User user = new User("test@norsys.fr");
-        assertThat(userService.getUserEmail(user)).isEqualTo("test@norsys.fr");
+    public void shouldReturnMaxOfUsersLoginHours() {
+        assertThat(userService.getMaxOfUsersLoginHours(users)).isEqualTo(1050);
     }
 
-    @Test
-    public void shouldReturnUknownIfUserIsEmpty() {
-        User user = null;
-        assertThat(userService.getUserEmail(user)).isEqualTo("unknown");
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowExceptionMaxLoginHours() {
+        userService.getMaxOfUsersLoginHours(new ArrayList<>());
     }
 
     /**
-     * Map
-     * Create a method that returns true is email is valid,
-     * false if not valid, and throws NoSuchElementException if user is null
+     * IntStream
+     * min
+     * create a method that returns the min login hours within users
+     * throws NoSuchElementException if there is no element is the main stream
      */
 
     @Test
-    public void shouldReturnTrueIfUserHasAValidEmail() {
-        User user = new User("makouz@norsys.fr");
-        assertThat(userService.isUserEmailValid(user)).isTrue();
-    }
-
-    @Test
-    public void shouldReturnFalseIfUserIsNotNullButInvalidEmail() {
-        User user = new User("makouz-norsys.fr");
-        assertThat(userService.isUserEmailValid(user)).isFalse();
+    public void shouldReturnMinOfUsersLoginHours() {
+        assertThat(userService.getMinOfUsersLoginHours(users)).isEqualTo(500);
     }
 
     @Test(expected = NoSuchElementException.class)
-    public void shouldReturnFalseIfUserIsNull() {
-        User user = null;
-        userService.isUserEmailValid(user);
+    public void shouldThrowsExceptionMinLoginHours() {
+        userService.getMinOfUsersLoginHours(new ArrayList<>());
     }
 
     /**
-     * Map
-     * create a function that returns the country name of the user
-     * returns "unknown" if user is null
-     * returns "unknown address" if user address is null
-     * returns "unknown country" if user country is null
+     * IntSummaryStatistics
+     * create a method that returns IntSummaryStatistics from users List login hours
      */
 
     @Test
-    public void shouldReturnUserCountryName() {
-        User user = new User("makouz@norsys.fr", new Address(new Country("Morocco")));
-        assertThat(userService.getUserCountryName(user)).isEqualTo("Morocco");
-    }
-
-
-    @Test
-    public void shouldReturnUknownCountryIfUserCountryIsNull() {
-        User user = new User("makouz@norsys.fr", new Address(null));
-        assertThat(userService.getUserCountryName(user)).isEqualTo("unknown country");
-    }
-
-
-    @Test
-    public void shouldReturnUknownAddressIfUserCountryIsNull() {
-        User user = new User("makouz@norsys.fr");
-        assertThat(userService.getUserCountryName(user)).isEqualTo("unknown address");
-    }
-
-    @Test
-    public void shouldReturnUknownUserIfUserCountryIsNull() {
-        User user = null;
-        assertThat(userService.getUserCountryName(user)).isEqualTo("unknown");
-    }
-
-    
-    /**
-     * or
-     * create a method that takes two users as an argument
-     * returns first user email, IF it's not null
-     * else returns second user email, IF first user is null and second user is not null
-     * else returns noSuchElementException
-     */
-
-    @Test
-    public void shouldReturnsFirstUserEmailIfUserIsNotNull() throws Exception {
-        User user = new User("makouz@norsys.fr");
-        assertThat(userService.getFirstUserEmail(user, null)).isEqualTo("makouz@norsys.fr");
-    }
-
-    @Test
-    public void shouldReturnSecondUserEmailIfFirstIsNull() throws Exception {
-        User user2 = new User("user2@norsys.fr");
-        assertThat(userService.getFirstUserEmail(null, user2)).isEqualTo("user2@norsys.fr");
-    }
-
-    @Test(expected = NoSuchFieldException.class)
-    public void shouldThrowsFirstUserEmailIfUserIsNotNull() throws Exception {
-        userService.getFirstUserEmail(null, null);
+    public void shouldReturnLoginHoursSummaryStatisticFromUsersList() {
+        IntSummaryStatistics intSummaryStatistics = userService.getSummaryStatisticsFromUsersList(users);
+        assertThat(intSummaryStatistics.getSum()).isEqualTo(6127);
+        assertThat(intSummaryStatistics.getMax()).isEqualTo(1050);
+        assertThat(intSummaryStatistics.getMin()).isEqualTo(500);
+        assertThat(Math.round(intSummaryStatistics.getAverage())).isEqualTo(875);
     }
 
     /**
-     * IfPresent
-     * Create a method that return a list of one user if it exists
-     * and an Empty List if Empty
+     * Collectors
+     * Collectors to Map
+     * create a method that returns a MAP of users with country name as key
+     * and it's list of users as value
      */
 
     @Test
-    public void shouldReturnAlistOfOneObjectIfUserIsNotNullBis() {
-        User user = new User("makouz@norsys.fr");
-        List<User> users = userService.getListFromUser(user);
-        assertThat(users.size()).isEqualTo(1);
-        assertThat(users.get(0).getEmail()).isEqualTo("makouz@norsys.fr");
-    }
-
-    @Test
-    public void shouldReturnAnEmptyListIfUserIsNull() {
-        List<User> users = userService.getListFromUser(null);
-        assertThat(users).isEmpty();
+    public void shouldReturnMapOfUsersGroupedByCountryName() {
+        Set set = new TreeSet(Arrays.asList("Morocco", "France", "Portugal", "USA", "Canada"));
+        Map<String, List<User>> groupedUsers = userService.getGroupedUserByCountryName(users);
+        assertThat(groupedUsers).hasSize(5);
+        assertThat(groupedUsers.keySet()).isEqualTo(set);
+        assertThat(groupedUsers.get("Morocco")).hasSize(1);
+        assertThat(groupedUsers.get("France")).hasSize(2);
+        assertThat(groupedUsers.get("Portugal")).hasSize(2);
+        assertThat(groupedUsers.get("USA")).hasSize(1);
+        assertThat(groupedUsers.get("Canada")).hasSize(1);
     }
 
     /**
-     * IfPresentOrElse / Stream
-     * Create a method that return a list of one user if it not null
-     * else returns a list with user "random@norsys.fr"
+     * Collectors
+     * Grouping
+     * create a method that returns a MAP of with country name as key
+     * and it's list of users as value
      */
 
     @Test
-    public void shouldReturnAlistOfOneObjectIfUserIsNotNull() {
-        User user = new User("makouz@norsys.fr");
-        List<User> users = userService.getListFromUserBis(user);
-        assertThat(users.size()).isEqualTo(1);
-        assertThat(users.get(0).getEmail()).isEqualTo("makouz@norsys.fr");
+    public void shouldReturnMapOfUsersGroupedByCountryNameGrouping() {
+        Set set = new TreeSet(Arrays.asList("Morocco", "France", "Portugal", "USA", "Canada"));
+        Map<String, List<User>> groupedUsers = userService.getGroupedUserByCountryNameGrouping(users);
+        assertThat(groupedUsers).hasSize(5);
+        assertThat(groupedUsers.keySet()).isEqualTo(set);
+        assertThat(groupedUsers.get("Morocco")).hasSize(1);
+        assertThat(groupedUsers.get("France")).hasSize(2);
+        assertThat(groupedUsers.get("Portugal")).hasSize(2);
+        assertThat(groupedUsers.get("USA")).hasSize(1);
+        assertThat(groupedUsers.get("Canada")).hasSize(1);
+
     }
 
+    /**
+     * Collectors
+     * joining
+     * create a method that returns a concat of users email
+     */
+
     @Test
-    public void shouldReturnAnEmptyListIfUserIsNullBis() {
-        List<User> users = userService.getListFromUserBis(null);
-        assertThat(users.size()).isEqualTo(1);
-        assertThat(users.get(0).getEmail()).isEqualTo("random@norsys.fr");
+    public void shouldReturnAConcatOfUsersEmailJoining() {
+        String expectedResult = "user1,user2,user3,user4,user5,user6,user7";
+        assertThat(userService.getUserEmailCombinedJoining(users)).isEqualTo(expectedResult);
     }
+
+    /**
+     * Collectors
+     * Partitioning By
+     * create a method that returns a MAP with true as key and list of users older(orEqual) than 30 YO as value
+     * and false as key and list of users younger than 30 YO
+     */
+
+    @Test
+    public void shouldReturnMapOfBooleanByAge() {
+        Map<Boolean, List<User>> partitionedUsers = userService.getPartitionedUserByAge(users, 30);
+        assertThat(partitionedUsers).hasSize(2);
+        assertThat(partitionedUsers.get(true)).hasSize(4);
+        assertThat(partitionedUsers.get(false)).hasSize(3);
+    }
+
+    /**
+     * Collectors
+     * Counting
+     * create a method that returns a MAP with country name as key and NUMBER of it's users as value
+     */
+
+    @Test
+    public void shouldReturnMapOfUsersGroupedByCountryNameAndNumberOfUsers() {
+        Map<String, Long> groupedUsers = userService.getGroupedUserByCountryNameNumber(users);
+        assertThat(groupedUsers).hasSize(5);
+        assertThat(groupedUsers.get("Morocco")).isEqualTo(1);
+        assertThat(groupedUsers.get("France")).isEqualTo(2);
+        assertThat(groupedUsers.get("Portugal")).isEqualTo(2);
+        assertThat(groupedUsers.get("USA")).isEqualTo(1);
+        assertThat(groupedUsers.get("Canada")).isEqualTo(1);
+    }
+
+
+    /**
+     * Collectors
+     * reducing
+     * create a method that returns a MAP With country name as key and SUM of it's users login hours as value
+     */
+
+    @Test
+    public void shouldGetMapOfCountriesAndThereSumOfLoginHours() {
+        Map<String, Integer> result = userService.getCountriesWithSumOfLoginHours(users);
+        assertThat(result).hasSize(5);
+        assertThat(result.get("Morocco")).isEqualTo(500);
+        assertThat(result.get("France")).isEqualTo(1908);
+        assertThat(result.get("Portugal")).isEqualTo(1956);
+        assertThat(result.get("USA")).isEqualTo(875);
+        assertThat(result.get("Canada")).isEqualTo(888);
+    }
+
+    /**
+     * Collectors
+     * Mapping
+     * create a method that returns a MAP with country name as key and LIST of it's users emails as value
+     */
+
+    @Test
+    public void shouldGetMapOfCountriesAndListOfEmails() {
+        Map<String, List<String>> result = userService.getUserEmailsByContryName(users);
+        System.out.println(result);
+        assertThat(result).hasSize(5);
+        assertThat(result.get("Canada")).isEqualTo(Arrays.asList("user7-norsys.fr"));
+        assertThat(result.get("USA")).isEqualTo(Arrays.asList("user4@norsys.fr"));
+        assertThat(result.get("Morocco")).isEqualTo(Arrays.asList("user1@norsys.fr"));
+        assertThat(result.get("France")).isEqualTo(Arrays.asList("user2@norsys.fr", "user5@norsys.fr"));
+        assertThat(result.get("Portugal")).isEqualTo(Arrays.asList("user3@norsys.fr", "user6@norsys.fr"));
+    }
+
+    /**
+     * Use above tools to solve this one
+     */
+
+    @Test
+    public void shouldReturnMapOfUserPartitionedByAgeGroupedCountry() {
+        Map<Boolean, Map<String, Long>> result = userService.getPartitionedUserByAgeGroupedByCountry(users, 30);
+        assertThat(result.get(false)).hasSize(3);
+        assertThat(result.get(false).get("Morocco")).isEqualTo(1);
+        assertThat(result.get(false).get("France")).isEqualTo(1);
+        assertThat(result.get(false).get("Portugal")).isEqualTo(1);
+        assertThat(result.get(true)).hasSize(4);
+        assertThat(result.get(true).get("Canada")).isEqualTo(1);
+        assertThat(result.get(true).get("USA")).isEqualTo(1);
+        assertThat(result.get(true).get("France")).isEqualTo(1);
+        assertThat(result.get(true).get("Portugal")).isEqualTo(1);
+
+    }
+
 
 }

@@ -1,23 +1,29 @@
 package fr.norsys;
 
-import java.util.Optional;
-
 public class User {
 
     private String email;
     private Address address;
+    private int age;
+    private int loginHours;
+
+
+    public int getLoginHours() {
+        return loginHours;
+    }
+
+    public void setLoginHours(int loginHours) {
+        this.loginHours = loginHours;
+    }
 
     public User() {
     }
 
-    public User(String email) {
-        this.email = email;
-        System.out.println("creating new user using email constructor");
-    }
-
-    public User(String email, Address address) {
+    public User(String email, Address address, int age, int loginHours) {
         this.email = email;
         this.address = address;
+        this.age = age;
+        this.loginHours = loginHours;
     }
 
     public String getEmail() {
@@ -28,11 +34,19 @@ public class User {
         this.email = email;
     }
 
-    public Optional<Address> getAddress() {
-        return Optional.ofNullable(address);
+    public Address getAddress() {
+        return address;
     }
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 }

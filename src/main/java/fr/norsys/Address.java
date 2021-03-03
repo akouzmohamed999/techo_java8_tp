@@ -1,6 +1,5 @@
 package fr.norsys;
 
-import java.util.Optional;
 
 public class Address {
     private Country country;
@@ -9,7 +8,7 @@ public class Address {
         this.country = country;
     }
 
-    public Optional<Country> getCountry() {
-        return Optional.ofNullable(this.country);
+    public Country getCountry() {
+        return this.country;
     }
 }
