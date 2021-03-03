@@ -9,10 +9,6 @@ public class UserService {
         return null;
     }
 
-    public User throwExceptionIfUserIsNull(User user) {
-        return null;
-    }
-
     public User getUserUsingOrElse(User user) {
         return null;
     }
@@ -25,19 +21,11 @@ public class UserService {
         return null;
     }
 
-    public String getUserCountryName(User user) {
-        return null;
-    }
-
     public String getFirstUserEmail(User user1, User user2) throws Exception {
         return null;
     }
 
     public List<User> getListFromUser(User user) {
-        return null;
-    }
-
-    public List<User> getListFromUserBis(User user) {
         return null;
     }
 }
