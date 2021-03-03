@@ -1,6 +1,5 @@
 package fr.norsys;
 
-import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 
@@ -19,10 +18,6 @@ public class UserService {
     }
 
     public List<String> getCountriesNameFromUsersDistinct(List<User> users) {
-        return null;
-    }
-
-    public List<Country> getCountriesFromUsersDistinct(List<User> users) {
         return null;
     }
 
@@ -52,22 +47,6 @@ public class UserService {
     }
 
     public Double getUserAverageAge(List<User> users) {
-        return null;
-    }
-
-    public Integer getSumOfUsersLoginHours(List<User> users) {
-        return null;
-    }
-
-    public Integer getMaxOfUsersLoginHours(List<User> users) {
-        return null;
-    }
-
-    public Integer getMinOfUsersLoginHours(List<User> users) {
-        return null;
-    }
-
-    public IntSummaryStatistics getSummaryStatisticsFromUsersList(List<User> users) {
         return null;
     }
 
