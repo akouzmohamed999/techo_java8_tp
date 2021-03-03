@@ -83,21 +83,10 @@ public class UserServiceTest {
 
 
     /**
-     * distinct
-     * creates a method that returns list of countries distinct (with no duplicates)
-     */
-
-    @Test
-    public void shouldReturnAListOfCountriesFromListOfUsersDistinct() {
-        List<Country> countries = userService.getCountriesFromUsersDistinct(users);
-        assertThat(countries.size()).isEqualTo(5);
-    }
-
-
-    /**
      * All Match
      * create a method that returns true if ALL users emails are valid
      * else returns false
+     * ==> we consider any email with "@" on it as a valid email
      */
 
     @Test
@@ -162,9 +151,8 @@ public class UserServiceTest {
 
     @Test
     public void shouldReturnAConcatOfUsersEmail() {
-        String expectedResult = "user1,user2,user3,user4,user5,user6,user7";
+        String expectedResult = "user1@norsys.fr,user2@norsys.fr,user3@norsys.fr,user4@norsys.fr,user5@norsys.fr,user6@norsys.fr,user7-norsys.fr";
         assertThat(userService.getUserEmailCombined(users)).isEqualTo(expectedResult);
-
     }
 
     /**
@@ -176,78 +164,12 @@ public class UserServiceTest {
 
     @Test
     public void shouldReturnAverageUsersAge() {
-        assertThat(userService.getUserAverageAge(users)).isEqualTo(32);
+        assertThat(userService.getUserAverageAge(users)).isEqualTo(32.42857142857143);
     }
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowExceptionWhenNoAverageIsFound() {
         userService.getUserAverageAge(new ArrayList<>());
-    }
-
-    /**
-     * IntStream
-     * sum
-     * create a method that returns the sum of users login hours
-     */
-
-    @Test
-    public void shouldReturnSumOfUsersLoginHours() {
-        assertThat(userService.getSumOfUsersLoginHours(users)).isEqualTo(6127);
-    }
-
-
-    @Test
-    public void shouldReturn0LoginHoursIfListIsEmpty() {
-        assertThat(userService.getSumOfUsersLoginHours(new ArrayList<>())).isEqualTo(0);
-    }
-
-    /**
-     * IntStream
-     * max
-     * create a method that returns the max login hours within users
-     * throws NoSuchElementException if there is no element is the main stream
-     */
-
-    @Test
-    public void shouldReturnMaxOfUsersLoginHours() {
-        assertThat(userService.getMaxOfUsersLoginHours(users)).isEqualTo(1050);
-    }
-
-
-    @Test(expected = NoSuchElementException.class)
-    public void shouldThrowExceptionMaxLoginHours() {
-        userService.getMaxOfUsersLoginHours(new ArrayList<>());
-    }
-
-    /**
-     * IntStream
-     * min
-     * create a method that returns the min login hours within users
-     * throws NoSuchElementException if there is no element is the main stream
-     */
-
-    @Test
-    public void shouldReturnMinOfUsersLoginHours() {
-        assertThat(userService.getMinOfUsersLoginHours(users)).isEqualTo(500);
-    }
-
-    @Test(expected = NoSuchElementException.class)
-    public void shouldThrowsExceptionMinLoginHours() {
-        userService.getMinOfUsersLoginHours(new ArrayList<>());
-    }
-
-    /**
-     * IntSummaryStatistics
-     * create a method that returns IntSummaryStatistics from users List login hours
-     */
-
-    @Test
-    public void shouldReturnLoginHoursSummaryStatisticFromUsersList() {
-        IntSummaryStatistics intSummaryStatistics = userService.getSummaryStatisticsFromUsersList(users);
-        assertThat(intSummaryStatistics.getSum()).isEqualTo(6127);
-        assertThat(intSummaryStatistics.getMax()).isEqualTo(1050);
-        assertThat(intSummaryStatistics.getMin()).isEqualTo(500);
-        assertThat(Math.round(intSummaryStatistics.getAverage())).isEqualTo(875);
     }
 
     /**
@@ -299,7 +221,7 @@ public class UserServiceTest {
 
     @Test
     public void shouldReturnAConcatOfUsersEmailJoining() {
-        String expectedResult = "user1,user2,user3,user4,user5,user6,user7";
+        String expectedResult = "user1@norsys.fr,user2@norsys.fr,user3@norsys.fr,user4@norsys.fr,user5@norsys.fr,user6@norsys.fr,user7-norsys.fr";
         assertThat(userService.getUserEmailCombinedJoining(users)).isEqualTo(expectedResult);
     }
 
